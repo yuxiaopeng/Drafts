@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <!--<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />-->
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+        <meta name="format-detection" content="telephone=no" />
+        <meta name="format-detection" content="date=no" />
+        <meta name="format-detection" content="address=no" />
+        <meta name="format-detection" content="email=no" />
+    </head>
+    <style>
+    html {
+        -webkit-text-size-adjust: none
+    }
+    * {
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        font-family: Helvetica;
+    }
+    .loader {
+        border: 4px solid #f3f3f3;
+        border-radius: 50%;
+        border-top: 4px solid #3498db;
+        width: 32px;
+        height: 32px;
+        -webkit-animation: spin 1s linear infinite;
+        animation: spin 1s linear infinite;
+    }
+    @-webkit-keyframes spin {
+        0% { -webkit-transform: rotate(0deg); }
+        100% { -webkit-transform: rotate(360deg); }
+    }
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    #loader-wrapper {
+        width: 100%;
+        /*display: inline-block;
+        position: relative;*/
+    }
+    #loader {
+        display:-webkit-box;
+        -webkit-box-align:center;
+        -webkit-box-pack:center;
+    }
+    #image-wrapper {
+        width: 100%;
+        display: inline-block;
+        position: relative;
+    }
+    #image-wrapper:after {
+        padding-top: 56.25%; /* 16:9 ratio */
+        display: block;
+        content: '';
+    }
+    #image {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        right: 0;
+        left: 0;
+        background-color: black;
+        color: white;
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: 50% 50%;
+        display:-webkit-box;
+        -webkit-box-align:center;
+        -webkit-box-pack:center;
+    }
+    #progress-background {
+        position: absolute;
+        left:0;
+        bottom:0;
+        width: 100%;
+        height: 2px;
+        border-style: none;
+        background-color: gold;
+        opacity: 0.2;
+    }
+    #progress {
+        position: absolute;
+        left:0;
+        bottom:0;
+        width: 0%;
+        height: 2px;
+        border-style: none;
+        background-color: gold;
+        opacity: 0.9;
+    }
+    #title-wrapper {
+        /*white-space: nowrap;*/
+        /*text-overflow: ellipsis;*/
+        overflow: hidden;
+        text-align: center;
+        word-wrap: break-word;
+        /*word-break: break-all;
+        text-overflow: ellipsis;*/
+    }
+    #title {
+        overflow:hidden;
+        text-align: center;
+        font-weight: bold;
+        word-wrap: break-word;
+        /*word-break: break-all;
+        text-overflow: ellipsis;*/
+    }
+    #subtitle {
+        overflow:hidden;
+        text-align: center;
+        font-weight: bold;
+        word-wrap: break-word;
+        /*word-break: break-all;
+        text-overflow: ellipsis;*/
+    }
+    #overview {
+        /*font-size: 1em;*/
+    }
+    #reload {
+        font-size: 2em;
+    }
+    #vote-average {
+        width: 50%;
+        display: inline-block;
+        position: relative;
+        text-align:left;
+    }
+    #run-time {
+        width: 50%;
+        display: inline-block;
+        position: relative;
+        text-align:right;
+    }
+    #info {
+        /*font-size: 0.8em;*/
+    }
+    #left-panel {
+        width: 50%;
+        vertical-align: top;
+    }
+    #right-panel {
+        width: 50%;
+        vertical-align: top;
+    }
+    #panel-margin {
+        /*width: 0px;*/
+    }
+    .info-title {
+        opacity: 0.6;
+        width: 1px;
+        vertical-align: top;
+    }
+    .info-margin {
+        width: 8px;
+    }
+    table {
+        /*table-layout: fixed;*/
+        width: 100%;
+    }
+    .center {
+        display:-webkit-box;
+        -webkit-box-align:center;
+        -webkit-box-pack:center;
+    }
+    .button {
+        /*opacity:0.7;*/
+    }
+    .button:active {
+        /*opacity:1.0;*/
+        transform: translate(2px,2px);
+    }
+    a {
+        text-decoration: none;
+    }
+    .star-icon {
+        /*color: #ddd;*/
+        /*font-size: 2em;*/
+        position: relative;
+    }
+    .star-icon.full:before {
+        /*text-shadow: 0 0 2px rgba(0,0,0,0.7);
+        color: #FDE16D;*/
+        content: '\2605'; /* Full star in UTF-8 */
+        position: absolute;
+        left: 0;
+    }
+    .star-icon.half:before {
+        /*text-shadow: 0 0 2px rgba(0,0,0,0.7);
+        color: #FDE16D;*/
+        content: '\2605'; /* Full star in UTF-8 */
+        position: absolute;
+        left: 0;
+        width: 50%;
+        overflow: hidden;
+    }
+    
+    .reloadSingle {
+        height: 2em;
+        padding: .25em;
+        width: 2em;
+        display: inline-block;
+        position: relative;
+        -webkit-box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        box-sizing: border-box;
+    }
+    .reloadSingle:before, .reloadSingle:after {
+        content: '';
+        display: block;
+    }
+    .reloadSingle:before {
+        border-color: transparent currentColor currentColor currentColor;
+        border-radius: 50%;
+        border-style: solid;
+        border-width: .125em;
+        height: 1.5em;
+        width: 1.5em;
+        -webkit-transform: rotate(45deg);
+        transform: rotate(45deg);
+    }
+    .reloadSingle:after {
+        border-color: transparent transparent transparent currentColor;
+        border-style: solid;
+        border-width: .3125em 0 .3125em .5em;
+        height: 0;
+        position: absolute;
+        top: 0;
+        left: 50%;
+        width: 0;
+    }
+    </style>
+    <script type="text/javascript">
+    //var g_mode;
+    var g_portraitHTML;
+    var g_landscapeHTML;
+    var g_currentHTML;
+    var g_json;
+    var g_showLoader;
+    var g_loading;
+    var g_progress;
+    var g_progressColor;
+    
+    function getWindowWidth() {
+        return document.documentElement.clientWidth || document.body.clientWidth || window.innerWidth;
+    }
+    
+    function isNarrowScreen() {
+        return getWindowWidth() <= 500;
+    }
+    
+    function setOrientation(orientation) {
+        //alert("setOrientation: " + orientation);
+        var selectedHTML;
+        /*
+        if (orientation == 90 || orientation == -90)
+            selectedHTML = g_landscapeHTML;
+        else
+            selectedHTML = g_portraitHTML;
+         */
+        if (isNarrowScreen())
+            selectedHTML = g_portraitHTML;
+        else
+            selectedHTML = g_landscapeHTML;
+        if (selectedHTML != g_currentHTML) {
+            document.getElementById("main-content").innerHTML = selectedHTML;
+            g_currentHTML = selectedHTML;
+        }
+        setProgress(g_progress);
+        setProgressColor(g_progressColor);
+    }
+    
+    function init() {
+        /*
+        var query = window.location.search.substring(1) + "&";
+        var items = query.split("&");
+        for (var i = 0; i < items.length; ++i) {
+            var item = items[i];
+            var pair = item.split("=");
+            if (pair.length != 2)
+            continue;
+            if (pair[0] == "mode")
+            g_mode = pair[1];
+        }*/
+        /*
+        //if (g_mode != "pad") {
+            window.onorientationchange = function() {
+                setOrientation(window.orientation);
+                reload();
+            }
+        //}*/
+        window.onload = function() {
+            //alert("onload");
+            if (!g_portraitHTML)
+                g_portraitHTML = document.getElementById("portrait").innerHTML;
+            if (!g_landscapeHTML)
+                g_landscapeHTML = document.getElementById("landscape").innerHTML;
+                /*
+            if (g_mode == "pad") {
+                //document.body.style.marginLeft = "50px";
+                //document.body.style.marginRight = "50px";
+                //document.body.style.fontSize = "1.1em";
+                document.getElementById("main-content").innerHTML = g_landscapeHTML;
+            } else {
+                setOrientation(window.orientation);
+            }*/
+            setOrientation(window.orientation);
+        }
+        
+        window.onresize = function() {
+            //alert("resize");
+            setOrientation(window.orientation);
+            reload();
+        }
+        /*
+        window.addEventListener("orientationchange", function() {
+            setOrientation(window.orientation);
+            reload();
+        });
+         */
+        /*
+        document.addEventListener('gesturestart', function (e) {
+            e.preventDefault();
+        });*/
+    }
+    
+    init();
+    
+    function reload() {
+        load(g_json);
+        if (g_showLoader)
+            showReload();
+        else if (g_loading)
+            showLoading(true);
+    }
+    
+    function load(json) {
+        if (getWindowWidth() < 700)
+            document.getElementById("info").style.fontSize = "0.8em";
+        else if (getWindowWidth() < 1000)
+            document.getElementById("info").style.fontSize = "0.9em";
+        else
+            document.getElementById("info").style.fontSize = "1.0em";
+         
+        /*
+        if (g_mode == "pad") {
+            //document.getElementById("title-wrapper").style.fontSize = "1.2em";
+            //document.getElementById("panel-margin").style.width = "20px";
+            //document.getElementById("info").style.fontSize = "0.8em";
+        } else {
+            document.getElementById("info").style.fontSize = "0.8em";
+        }*/
+        g_json = json;
+        if (json) {
+            if (json["image"])
+                document.getElementById("image").style.backgroundImage = "url('" + json["image"] + "')";
+            var voteAverage = json["vote_average"] / 10 * 5;
+            if (voteAverage) {
+                var v = parseInt(voteAverage, 10);
+                var stars = Array(v + 1).join("<span class='star-icon full'>☆</span>");
+                if (voteAverage - v >= 0.5) {
+                    stars += "<span class='star-icon half'>☆</span>";
+                    v++;
+                }
+                stars += Array(5 - v + 1).join("<span class='star-icon'>☆</span>");
+                document.getElementById("vote-average").innerHTML = stars;
+            }
+            var runTime = json["run_time"];
+            if (runTime)
+                document.getElementById("run-time").innerHTML = "<span id='playback-time'>" + json["playback_time"] + "</span> / " + runTime;
+            var year;
+            if (json["release_date"]) {
+                try {
+                    year = json["release_date"].split("-")[0];
+                } catch (e) {
+                }
+            } else if (json["first_air_date"]) {
+                try {
+                    year = json["first_air_date"].split("-")[0];
+                } catch (e) {
+                }
+            }
+            var title = json["title"];
+            if (title) {
+                var seasonNumber = json["season_number"];
+                if (seasonNumber)
+                    title += " - Season " + seasonNumber;
+                if (year)
+                    title += " (" + year + ")";
+                document.getElementById("title").innerHTML = title;
+            }
+            var episode;
+            var episodeNumber = json["episode_number"];
+            if (episodeNumber)
+                episode = "Episode " + episodeNumber;
+            var subtitle = json["subtitle"];
+            if (subtitle) {
+                var regex = new RegExp("^" + episode);
+                if (episode && !subtitle.match(regex))
+                    subtitle = episode + " : " + subtitle;
+            } else {
+                if (episode)
+                    subtitle = episode;
+            }
+            if (subtitle)
+                document.getElementById("subtitle").innerHTML = subtitle;
+            var overview = json["overview"];
+            if (overview)
+                document.getElementById("overview").innerHTML = json["overview"];
+            var info = "<table width='100%'>";
+            var creator = json["creator"];
+            if (creator)
+                info += "<tr><td class='info-title'>Creator</td><td class='info-margin'></td><td>" + creator + "</td></tr>";
+            var director = json["director"];
+            if (director)
+                info += "<tr><td class='info-title'>Director</td><td class='info-margin'></td><td>" + director + "</td></tr>";
+            var writer = json["writer"];
+            if (writer)
+                info += "<tr><td class='info-title'>Writer</td><td class='info-margin'></td><td>" + writer + "</td></tr>";
+            var cast = json["cast"];
+            if (cast)
+                info += "<tr><td class='info-title'>Cast</td><td class='info-margin'></td><td>" + cast + "</td></tr>";
+            var genre = json["genre"];
+            if (genre)
+                info += "<tr><td class='info-title'>Genre</td><td class='info-margin'></td><td>" + genre + "</td></tr>";
+            var videoInfo = json["video_info"];
+            if (videoInfo)
+                info += "<tr><td class='info-title'>Video</td><td class='info-margin'></td><td>" + videoInfo + "</td></tr>";
+            var audioInfo = json["audio_info"];
+            if (audioInfo)
+                info += "<tr><td class='info-title'>Audio</td><td class='info-margin'></td><td>" + audioInfo + "</td></tr>";
+            info += "</table>";
+            document.getElementById("info").innerHTML = info;
+            if (json["show_more"]) {
+                document.getElementById("more").innerHTML = "<a id='more-button' href='cmd://more'>" + json["more_title"] + "</a>";
+                document.getElementById("more-button").style.color = document.body.style.color;
+            }
+        }
+    }
+    
+    function showLoading(visible) {
+        g_loading = visible;
+        g_showLoader = false;
+        if (visible)
+            document.getElementById("loader").innerHTML = "<div class='loader'></div>";
+        else
+            document.getElementById("loader").innerHTML = "";
+    }
+    
+    function showReload() {
+        g_showLoader = true;
+        //document.getElementById("loader").innerHTML = "<div id='reload'><a id='reload-button' href='cmd://reload' title='Reload'>↻</a></div>";
+        //document.getElementById("reload-button").style.color = document.body.style.color;
+        document.getElementById("loader").innerHTML = "<div id='reload'><a href='cmd://reload' title='Reload'><span id='reload-button' class='reloadSingle' style='font-size:50%'></span></a></div>";
+        document.getElementById("reload-button").style.color = document.body.style.color;
+    }
+    
+    function setProgressColor(color) {
+        document.getElementById("progress-background").style.backgroundColor = color;
+        document.getElementById("progress").style.backgroundColor = color;
+        g_progressColor = color;
+    }
+    
+    function setProgress(value) {
+        if (value >= 1)
+            value = 0;
+        document.getElementById("progress").style.width = parseInt(value * 100, 10) + "%";
+        g_progress = value;
+    }
+    
+    function setPlaybackTime(value) {
+        document.getElementById("playback-time").innerHTML = value;
+    }
+    </script>
+    <body ontouchstart="">
+        <div id="main-content">
+            <div id="portrait">
+                <div id="image-wrapper">
+                    <div id="image">
+                        <div>
+                            <input title="Play" class="button" type="image" src="play_button.png" border="0" width="64" height="64" onclick="window.location='cmd://play'" />
+                        </div>
+                        <div id="progress-background"></div>
+                        <div id="progress"></div>
+                    </div>
+                </div>
+                <div style="font-size: 0.9em;"><div id="vote-average"></div><div id="run-time"></div></div>
+                <p id="title-wrapper">
+                    <div id="title"></div>
+                    <div id="subtitle"></div>
+                </p>
+                <p id="info"></p>
+                <p id="overview"></p>
+                <p id="more"></p>
+                <p id="loader-wrapper">
+                    <div id="loader"></div>
+                </p>
+            </div>
+            <div id="landscape">
+                <!--<div id="title-wrapper"><div><span id="title"></span> <span id="subtitle"></span></div></div><p/>-->
+                <table width="100%" style="table-layout: fixed">
+                    <tr>
+                        <td id="left-panel">
+                            <div id="image-wrapper">
+                                <div id="image">
+                                    <div>
+                                        <input title="Play" class="button" type="image" src="play_button.png" border="0" width="64" height="64" onclick="window.location='cmd://play'" />
+                                    </div>
+                                    <div id="progress-background"></div>
+                                    <div id="progress"></div>
+                                </div>
+                            </div>
+                            <div style="font-size: 0.9em;"><div id="vote-average"></div><div id="run-time"></div></div>
+                        </td>
+                        <td id="panel-margin">
+                        </td>
+                        <td id="right-panel">
+                            <div id="title-wrapper"><span id="title"></span> <span id="subtitle"></span></div>
+                            <p/>
+                            <div id="info"></div>
+                            <div id="loader-wrapper">
+                                <div id="loader"></div>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+                <p id="overview"></p>
+                <p id="more"></p>
+            </div>
+        </div>
+        <iframe src="https://www.zxzj.pro/video/3956-1-5.html" seamless></iframe>
+    </body>
+</html>
+

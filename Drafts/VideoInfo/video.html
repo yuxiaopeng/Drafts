@@ -1,0 +1,15 @@
+<html>
+    <head>
+        <script>
+            var video = document.getElementsByTagName('video')[0];
+            if (video) {
+                window.webkit.messageHandlers.videoDetect.postMessage(video.currentSrc);
+            }
+        </script>
+    </head>
+    <body>
+        <video id="video1" style="width:600px;max-width:100%;" controls="">
+            <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
+          </video>
+    </body>
+</html>
